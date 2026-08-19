@@ -16,7 +16,7 @@ The single most common mistake is registering client domains inside the agency's
 | TLS certificates for connected hostnames | The platform terminating TLS | Certificates must live where the traffic terminates, and their renewal must be automated there. |
 | Site and app content | Whatever the contract says | Decide in writing before launch, not during offboarding. |
 
-If a client has no domain yet, resist the shortcut of buying it under your account "for now." Either walk them through registering it themselves, or purchase it on their behalf through a flow that lands ownership with them from the start. Custom Domain's [API](https://customdomain.ai/custom-domain-api) includes registrar search and purchase for exactly this: the domain becomes a line item in your offering, and the ownership records are clean from day one.
+If a client has no domain yet, resist the shortcut of buying it under your account "for now." Either walk them through registering it themselves, or purchase it on their behalf through a flow that lands ownership with them from the start. CustomDomain's [API](https://customdomain.ai/custom-domain-api) includes registrar search and purchase for exactly this: the domain becomes a line item in your offering, and the ownership records are clean from day one.
 
 ## Access: authorization, not credentials
 
@@ -24,7 +24,7 @@ Everything you legitimately need to do with a client's domain amounts to writing
 
 The sustainable model is delegated authorization. The client approves the connection from their own provider account, the scope of what gets written is fixed and visible, and the grant is revocable without anyone rotating a password. This is important enough that it has its own deep dive: [Stop collecting registrar logins](03-stop-collecting-registrar-logins.md).
 
-Day to day, this means your onboarding step is one link. The client pastes their domain, approves at their own provider, and the records, ownership verification, and certificate are done in about 30 seconds, under your brand ([how white label works](02-white-label-domain-connection.md)).
+Day to day, this means your onboarding step is one link. The client pastes their domain, approves at their own provider, and the records, verification, and certificate are done in about 30 seconds, under your brand ([how white label works](02-white-label-domain-connection.md)).
 
 ## Renewals: two different clocks
 
@@ -42,15 +42,17 @@ Two practices prevent nearly all registration-side incidents. First, at onboardi
 
 Certificate renewal, by contrast, should never appear on a human's calendar. A managed edge issues the certificate when the domain connects and renews it for as long as the domain stays connected, without touching the client's DNS again. What that looks like across many domains, including the fail-closed behavior you should demand, is covered in [Bulk operations and monitoring](04-bulk-operations-and-monitoring.md).
 
+One thing that does belong on a checklist, once per client zone: CAA. A `CAA` record naming a certificate authority you are not using will block issuance while every other record looks perfect, and the error surfaces minutes later as a TLS failure rather than as a DNS one. Run `dig +short CAA <domain>` at onboarding. An empty answer means no restriction and is fine.
+
 ## Offboarding: the checklist
 
 Client relationships end. A clean offboarding is the strongest evidence that your ownership model was right all along. In order:
 
 1. **Confirm ownership is already with the client.** Registration in their name, registrar account under their email, payment method theirs. If any of these are not true, fix that first, while goodwill still exists.
 2. **Lower TTLs ahead of the cutover.** A day or two before migration, drop the TTL on the records that will change (to 300 or so), so the switch is fast and reversible.
-3. **Hand over a record inventory.** Export the exact DNS records that exist because of you: type, name, value, TTL. Their next provider will thank you, and nothing becomes a "mystery record" someone deletes in two years.
+3. **Hand over a record inventory.** Export the exact DNS records that exist because of you: type, name, value, TTL. `GET /v1/connections/{id}/records` returns the authoritative set per connection, so this is a script rather than an archaeology project. Their next provider will thank you, and nothing becomes a record someone deletes as a mystery in two years.
 4. **Point the domain at its new home, or remove your records.** Coordinate the timing with whoever is receiving the traffic.
-5. **Disconnect the domain and revoke the authorization.** Removing the connection stops traffic serving, stops certificate renewal, and stops monitoring, in that order and on purpose. Any provider grant or API token tied to the engagement gets revoked the same day.
+5. **Disconnect the domain and revoke the authorization.** `DELETE /v1/connections/{id}` stops traffic serving, stops certificate renewal, and stops monitoring; for a connection in managed mode it first reverts the records it wrote, through the stored grant, before deleting the connection. Any provider grant or remembered API token tied to the engagement gets revoked the same day. See [offboarding in the docs](https://docs.customdomain.ai/docs/connect-flow/offboarding).
 6. **Confirm from the outside.** Resolve the domain from a public resolver and load it in a browser. Offboarding ends with verification, exactly like onboarding does.
 
 Notice what is absent: no password changes, no "please remove our staff from your registrar account," no wondering what access is still floating around. That is what the authorization model buys you. If your current offboarding involves a password spreadsheet audit, start with [doc 03](03-stop-collecting-registrar-logins.md).
@@ -61,12 +63,12 @@ The same discipline, run forward, fits in five lines:
 
 1. Client owns the registration (or buys it through your flow, in their name).
 2. Client connects via [one-click provider authorization](https://customdomain.ai/one-click-dns-setup), under your brand.
-3. Ownership verifies and the certificate issues automatically. No go-live before verification.
-4. The domain enters hourly monitoring with webhooks wired to your ticketing.
+3. The records are verified against public DNS by exact value, the connection reaches `live`, and the certificate issues. Nothing serves before that.
+4. The domain stays enrolled in drift monitoring, with the checks and their delivery caveat covered in [doc 04](04-bulk-operations-and-monitoring.md).
 5. Registration expiry goes on the fleet calendar.
 
 A general walkthrough of the connection sequence itself is at [how to set up a custom domain](https://customdomain.ai/guides/how-to-set-up-a-custom-domain).
 
-## About Custom Domain
+## About CustomDomain
 
-This guide is maintained by [Custom Domain](https://customdomain.ai), a managed platform that lets your clients connect their own domains: automatic DNS configuration, ownership verification, and TLS issuance and renewal across 63 providers, more than 25 of them fully auto-configured for one-click provider authorization, fully white label for [agencies and resellers](https://customdomain.ai/for/agencies-white-label). Docs at [app.customdomain.ai/docs](https://app.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).
+This guide is maintained by [CustomDomain](https://customdomain.ai), a managed platform that lets your clients connect their own domains: automatic DNS configuration, value-checked verification, and TLS issuance and renewal across 63 providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual, fully white label for [agencies and resellers](https://customdomain.ai/for/agencies-white-label). Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).
