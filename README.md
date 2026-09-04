@@ -15,39 +15,37 @@ White-label custom domains for agencies — connect client domains to the platfo
 | **Stack** | Markdown guide · REST API, OpenAPI 3.1 · embeddable widget (`customdomain-js`) |
 | **Status** | Maintained · 63 providers and 5 plans re-counted from the live API 2026-09-04 |
 
-Managing forty client sites means managing forty domains that live wherever the client happened to
-buy them. This repository is the operational playbook for that: how a domain actually goes live,
-the three ways a client can authorize the change without handing you a registrar password, and how
-to keep a fleet healthy for years after launch day. Maintained by
-[Custom Domain](https://customdomain.ai); the guidance stands whether or not you use the product.
+Managing forty client sites means managing forty domains that live wherever the client happened to buy them.
+This repository is the operational playbook for that: how a domain actually goes live, the three ways a client
+can authorize the change without handing you a registrar password, and how to keep a fleet healthy for years
+after launch day. Maintained by [Custom Domain](https://customdomain.ai); the guidance stands whether or not you
+use the product.
 
 ## The problem, from the agency side
 
-Launch day follows the same ritual every time. You ask for registrar access, or worse, you collect
-a password into a shared document. You log into a DNS panel you have seen once before, where DNS
-management hides under a different menu name than it did at the last registrar. You add a CNAME and
-an A record, hoping the panel does not silently append the domain to the host field the way some
-do. Then you explain the certificate warning, and for years every ticket about it lands on your
-desk with your name on it.
+Launch day follows the same ritual every time. You ask for registrar access, or worse, you collect a password
+into a shared document. You log into a DNS panel you have seen once before, where DNS management hides under a
+different menu name than it did at the last registrar. You add a CNAME and an A record, hoping the panel does
+not silently append the domain to the host field the way some do. Then you explain the certificate warning, and
+for years every ticket about it lands on your desk with your name on it.
 
-The numbers are not imagined. The Domain Connect knowledge base (CC0) documents a major email suite
-whose manual setup runs 7 to 15 DNS records across a six-step process, backed by 16 help articles,
-10 of them registrar-specific, and reports that roughly half of the users who attempt manual DNS
-configuration abandon it. That describes an end user doing it once. An agency does it dozens of
-times a year, across a dozen different consoles, under deadline.
+The numbers are not imagined. The Domain Connect knowledge base (CC0) documents a major email suite whose manual
+setup runs 7 to 15 DNS records across a six-step process, backed by 16 help articles, 10 of them
+registrar-specific, and reports that roughly half of the users who attempt manual DNS configuration abandon it.
+That describes an end user doing it once. An agency does it dozens of times a year, across a dozen different
+consoles, under deadline.
 
-The structure points straight at the fix. The platform serving the site knows exactly which records
-are needed. The client's DNS provider can write them. A person in the middle copies strings between
-browser tabs by hand, and that third step is both the failure point and where the liability lives:
-a registrar login grants transfers, billing, contact changes and every other domain in the account,
-none of which you need and none of which you can audit. Everything below removes it.
+The structure points straight at the fix. The platform serving the site knows exactly which records are needed.
+The client's DNS provider can write them. A person in the middle copies strings between browser tabs by hand,
+and that third step is both the failure point and where the liability lives: a registrar login grants transfers,
+billing, contact changes and every other domain in the account, none of which you need and none of which you can
+audit. Everything below removes it.
 
 ## Quickstart
 
-One request starts a connection. `domain` is the only required field; `end_user_ref` is your own
-id for the client, set once at create and never mutated, and `batch_id` correlates every domain
-connected in one migration session. Both are what make per-client views and reconciliation possible
-later.
+One request starts a connection. `domain` is the only required field; `end_user_ref` is your own id for the
+client, set once at create and never mutated, and `batch_id` correlates every domain connected in one migration
+session. Both are what make per-client views and reconciliation possible later.
 
 ```bash
 curl -X POST https://api.customdomain.ai/v1/connections \
@@ -58,10 +56,10 @@ curl -X POST https://api.customdomain.ai/v1/connections \
        "batch_id": "migration-2026-q3"}'
 ```
 
-The response carries the connection plus its authoritative desired record set, and status walks
-`pending` to `propagating` to `live`. Create is idempotent per application plus domain, so a re-run
-mid-migration replays the existing connection with a `200` instead of duplicating it. Unknown
-fields are a `400`. Free-tier keys: [app.customdomain.ai/signup](https://app.customdomain.ai/signup).
+The response carries the connection plus its authoritative desired record set, and status walks `pending` to
+`propagating` to `live`. Create is idempotent per application plus domain, so a re-run mid-migration replays the
+existing connection with a `200` instead of duplicating it. Unknown fields are a `400`. Free-tier keys:
+[app.customdomain.ai/signup](https://app.customdomain.ai/signup).
 
 ## What it does
 
@@ -73,15 +71,14 @@ fields are a `400`. Free-tier keys: [app.customdomain.ai/signup](https://app.cus
 
 ## How it works
 
-Four things happen between "client owns a domain" and "client's site serves HTTPS on it": records
-point the name at the platform edge, control of the zone is proven, a certificate is issued and
-then renewed forever, and caches expire. The apex is the part that surprises people. A bare domain
-cannot hold a CNAME, because RFC 1034 §3.6.2 forbids other data alongside one and the apex must
-carry SOA and NS, so it takes a provider alias (CNAME flattening, ALIAS, ANAME) or A records you
-accept responsibility for updating.
+Four things happen between "client owns a domain" and "client's site serves HTTPS on it": records point the name
+at the platform edge, control of the zone is proven, a certificate is issued and then renewed forever, and
+caches expire. The apex is the part that surprises people. A bare domain cannot hold a CNAME, because RFC 1034
+§3.6.2 forbids other data alongside one and the apex must carry SOA and NS, so it takes a provider alias (CNAME
+flattening, ALIAS, ANAME) or A records you accept responsibility for updating.
 
-The copy-paste step can be removed three ways. The split below is the live census at
-`GET https://api.customdomain.ai/v1/providers/census`, counted 2026-09-04.
+The copy-paste step can be removed three ways. The split below is the live census at `GET
+https://api.customdomain.ai/v1/providers/census`, counted 2026-09-04.
 
 | Rail | Providers (of 63) | Client effort | Credentials you handle | Time to live |
 |---|---|---|---|---|
@@ -89,25 +86,23 @@ The copy-paste step can be removed three ways. The split below is the live censu
 | Scoped API token | 17 | Supply one DNS-scoped token, used once by default | None | Minutes |
 | Guided manual with automatic verification | 38 | Paste the exact records for their detected provider | None | Verified automatically |
 
-Control is proven by whichever rail wrote the records; on the manual path, proof is the records
-resolving to the exact expected values, never "the name resolves to something". There is no TXT
-ownership token. The product docs split one-click into provider OAuth and provider-hosted Domain
-Connect and call it four rails: same system, counted two ways
-([connect flow overview](https://docs.customdomain.ai/docs/connect-flow/overview)).
+Control is proven by whichever rail wrote the records; on the manual path, proof is the records resolving to the
+exact expected values, never "the name resolves to something". There is no TXT ownership token. The product docs
+split one-click into provider OAuth and provider-hosted Domain Connect and call it four rails: same system,
+counted two ways ([connect flow overview](https://docs.customdomain.ai/docs/connect-flow/overview)).
 
 ## White-label and the API surface
 
-The widget carries your brand on every screen: 85 raw design tokens for colours, spacing, radii and
-shadows, per-locale copy overrides, your logo, your font, and a hideable powered-by footer. When
-you call `open()` yourself the theme is client-side configuration the control plane never sees, so
-it applies in full. One case is gated: if a connect is forwarded as a share link and a teammate
-resumes it, branding on that resumed session falls back to default unless the workspace is on
-Enterprise.
+The widget carries your brand on every screen: 85 raw design tokens for colours, spacing, radii and shadows,
+per-locale copy overrides, your logo, your font, and a hideable powered-by footer. When you call `open()`
+yourself the theme is client-side configuration the control plane never sees, so it applies in full. One case is
+gated: if a connect is forwarded as a share link and a teammate resumes it, branding on that resumed session
+falls back to default unless the workspace is on Enterprise.
 
-Connections are enrolled in drift monitoring by default: an hourly sweep re-checks every declared
-record against live public DNS, because records do get deleted by an IT cleanup or another vendor's
-setup guide months later. The rest of the surface (connections, records, TLS, webhooks, registrar
-search and purchase) is in the [API reference](https://docs.customdomain.ai/docs/api-reference).
+Connections are enrolled in drift monitoring by default: an hourly sweep re-checks every declared record against
+live public DNS, because records do get deleted by an IT cleanup or another vendor's setup guide months later.
+The rest of the surface (connections, records, TLS, webhooks, registrar search and purchase) is in the [API
+reference](https://docs.customdomain.ai/docs/api-reference).
 
 ## Repository layout
 
@@ -120,10 +115,9 @@ search and purchase) is in the [API reference](https://docs.customdomain.ai/docs
 └── LICENSE    # MIT
 ```
 
-Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai`
-(OpenAPI 3.1: 67 paths, 79 operations, counted 2026-09-04), the widget published as
-[`customdomain-js`](https://www.npmjs.com/package/customdomain-js), and a hosted MCP server at
-`mcp.customdomain.ai/mcp` (registry id `ai.customdomain/mcp`) for agent-driven operations.
+Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai` (OpenAPI 3.1: 67
+paths, 79 operations, counted 2026-09-04), the widget published as `customdomain-js` on npm, and a hosted MCP
+server at `mcp.customdomain.ai/mcp` (registry id `ai.customdomain/mcp`) for agent-driven operations.
 
 ## Pricing, and where this loses
 
@@ -136,12 +130,11 @@ Read from `GET https://api.customdomain.ai/v1/plans` on 2026-09-04.
 | Growth | $649/mo | 600/yr, 50/month | Adds the reverse-proxy and certificate APIs |
 | Premium / Enterprise | Contact sales | 12,000/yr | Adds monitoring preview, then the white-label entitlement |
 
-Read the monthly number, not the annual one: a tier is sold per year and metered per UTC calendar
-month at `ceil(domains_per_year / 12)`, so the question is how many *new* connections you create in
-a busy month. Keeping an existing one costs nothing. Entri is the vendor you are most likely
-comparing against; read 2026-08-19, its entry tier is $249/mo for the same 600 a year with no free
-tier. Where Entri is ahead: across 696 provider domains in
-[Domain-Connect/Templates](https://github.com/Domain-Connect/Templates), goentri.com ships 77
+Read the monthly number, not the annual one: a tier is sold per year and metered per UTC calendar month at
+`ceil(domains_per_year / 12)`, so the question is how many *new* connections you create in a busy month. Keeping
+an existing one costs nothing. Entri is the vendor you are most likely comparing against; read 2026-08-19, its
+entry tier is $249/mo for the same 600 a year with no free tier. Where Entri is ahead: across 696 provider
+domains in [Domain-Connect/Templates](https://github.com/Domain-Connect/Templates), goentri.com ships 77
 one-click templates and customdomain.ai ships 18. That gap is real and it is theirs.
 
 ## Limits and known gaps
@@ -153,16 +146,16 @@ one-click templates and customdomain.ai ships 18. That gap is real and it is the
 
 ## Corrections
 
-Every number here traces to a live endpoint or a public repository, named at the point of use. If
-one does not, that is a bug: open an issue with the file and line.
+Every number here traces to a live endpoint or a public repository, named at the point of use. If one does not,
+that is a bug: open an issue with the file and line.
 
-Sibling guides: [for AI agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents) ·
-[for website builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders) ·
-[for email platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms) ·
-[awesome-custom-domains](https://github.com/CUSTOM-DOMAIN-APP/awesome-custom-domains), which lists
-the alternatives to this one. Problem framing draws on the
-[Domain Connect knowledge base](https://github.com/Domain-Connect/knowledge-base) (CC0 1.0), an
-open standard maintained by a community across multiple companies and referenced here as prior art.
+Sibling guides: [for AI agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents) · [for
+website builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders) · [for email
+platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms) ·
+[awesome-custom-domains](https://github.com/CUSTOM-DOMAIN-APP/awesome-custom-domains), which lists the
+alternatives to this one. Problem framing draws on the [Domain Connect knowledge
+base](https://github.com/Domain-Connect/knowledge-base) (CC0 1.0), an open standard maintained by a community
+across multiple companies and referenced here as prior art.
 
 ## License
 
