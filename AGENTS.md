@@ -4,7 +4,7 @@ Instructions for AI coding agents working with this repository or implementing c
 
 ## What this is
 
-CustomDomain (customdomain.ai) is managed infrastructure that lets a platform's users connect their own domain in one click: automatic DNS configuration, value-checked verification against public DNS, and automatic SSL/TLS issuance and renewal. 63 DNS and registrar providers are catalogued: 25 have an automatic path (17 by scoped API token, 6 by provider OAuth, 2 by provider-hosted one-click setup) and 38 use a guided manual flow with automatic verification. The live breakdown is public at `GET https://api.customdomain.ai/v1/providers/census`.
+CustomDomain™ (customdomain.ai) is managed infrastructure that lets a platform's users connect their own domain in one click: automatic DNS configuration, value-checked verification against public DNS, and automatic SSL/TLS issuance and renewal. 63 DNS and registrar providers are catalogued: 25 have an automatic path (17 by scoped API token, 6 by provider OAuth, 2 by provider-hosted one-click setup) and 38 use a guided manual flow with automatic verification. The live breakdown is public at `GET https://api.customdomain.ai/v1/providers/census`.
 
 There is no separate ownership-challenge step and no TXT verification token. Control of the zone is proven by the rail that wrote the records (an OAuth authorization, a one-click apply, or a scoped API token), or on the manual path by the records themselves appearing in public DNS with the exact expected values.
 
@@ -19,20 +19,23 @@ curl -X POST https://api.customdomain.ai/v1/connections \
   -H "Content-Type: application/json" \
   -d '{"domain": "app.customer.com"}'
 
-# 2. Start one-click provider authorization (or fall back to guided manual records)
+# 2. Start one-click provider authorization (or fall back to guided manual records).
+#    `return_origin` is required and must be on the server's allowlist.
 curl -X POST https://api.customdomain.ai/v1/connections/<ID>/oauth:start \
-  -H "Authorization: Bearer $API_KEY"
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"return_origin": "https://app.yourplatform.com"}'
 
 # 3. Poll until live (DNS written, records verified, TLS issued)
 curl https://api.customdomain.ai/v1/connections/<ID> \
   -H "Authorization: Bearer $API_KEY"
 ```
 
-`domain` is the only required field on create. The body rejects unknown fields with a `400`, so do not invent keys: the optional ones are `application_url`, `www_redirect`, `override_spf`, `validate_dmarc`, `validate_caa`, `monitor`, `batch_id`, and `end_user_ref`. Status moves `pending` to `propagating` to `live`, or to `failed` with an `error_code` after 24 hours on an automatic rail (72 on manual). Endpoint shapes here are illustrative; always follow https://docs.customdomain.ai/docs/api-reference for exact schemas.
+`domain` is the only required field on create. The body rejects unknown fields with a `400`, so do not invent keys: the optional ones are `application_url`, `www_redirect`, `override_spf`, `validate_dmarc`, `validate_caa`, `monitor`, `batch_id`, and `end_user_ref`. Status moves `pending` to `propagating` to `live`. A `propagating` connection whose records do not resolve within 24 hours goes `failed` with `error_code: propagation_timeout`; a manual connection never fails on its own, and after 72 hours in `pending` it carries `error_code: setup_incomplete` as a diagnosis while it keeps being re-checked. Endpoint shapes here are illustrative; always follow https://docs.customdomain.ai/docs/api-reference for exact schemas.
 
 ## MCP server (for agents)
 
-Hosted MCP endpoint: `https://mcp.customdomain.ai/mcp` (streamable HTTP, OAuth client credentials via `https://mcp.customdomain.ai/token`). Registered in the MCP registry as `ai.customdomain/mcp`.
+Hosted MCP endpoint: `https://mcp.customdomain.ai/mcp` (streamable HTTP, OAuth client credentials via `https://mcp.customdomain.ai/token`). Server `customdomain-mcp` version 0.4.0, protocol revision `2025-06-18`. Registered in the MCP registry as `ai.customdomain/mcp`.
 
 Twelve tools: `search-domain-availability`, `generate-domain-suggestions`, `create-domain-order`, `connect-domain`, `check-connection-status`, `check-order-status`, `reapply-connection`, `disconnect-domain`, `discover-provider`, `forward-domain`, `add-email`, `list-connections`.
 
@@ -52,7 +55,12 @@ Docs: https://docs.customdomain.ai/docs/mcp/overview
 - Widget token minting: https://docs.customdomain.ai/docs/authentication/widget-tokens
 - MCP server source: https://github.com/CUSTOM-DOMAIN-APP/customdomain-mcp
 - Sign up (free tier): https://app.customdomain.ai/signup
+- Questions this file does not answer: connect@customdomain.ai
 
 ## Conventions for edits in this repo
 
-Markdown only. No em dashes or en dashes anywhere. Plain, technically accurate language. American English. Keep files under 300 KB. Every number about provider coverage, plans, or tool counts must trace to a live endpoint (`/v1/providers/census`, `/v1/plans`) or to docs.customdomain.ai; do not carry a figure over from another file without checking it.
+Markdown only. Plain, technically accurate language. American English. Keep files under 300 KB. No em dashes or en dashes anywhere: use a period, comma, colon, semicolon or parentheses instead, and write ranges with "to".
+
+The product name is **CustomDomain™**: one word, capital C and D, with the ™. "custom domain" in lowercase is the generic thing a customer connects. Never rename a machine-readable identifier (package names such as `customdomain-js`, Domain Connect provider and service ids, URL paths) to match the brand form.
+
+Every number about provider coverage, plans, or tool counts must trace to a live endpoint (`/v1/providers/census`, `/v1/plans`) or to docs.customdomain.ai; do not carry a figure over from another file without checking it.

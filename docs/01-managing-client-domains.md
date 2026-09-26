@@ -16,7 +16,7 @@ The single most common mistake is registering client domains inside the agency's
 | TLS certificates for connected hostnames | The platform terminating TLS | Certificates must live where the traffic terminates, and their renewal must be automated there. |
 | Site and app content | Whatever the contract says | Decide in writing before launch, not during offboarding. |
 
-If a client has no domain yet, resist the shortcut of buying it under your account "for now." Either walk them through registering it themselves, or purchase it on their behalf through a flow that lands ownership with them from the start. CustomDomain's [API](https://customdomain.ai/custom-domain-api) includes registrar search and purchase for exactly this: the domain becomes a line item in your offering, and the ownership records are clean from day one.
+If a client has no domain yet, resist the shortcut of buying it under your account "for now." Either walk them through registering it themselves, or purchase it on their behalf through a flow that lands ownership with them from the start. CustomDomain™'s [API](https://customdomain.ai/custom-domain-api) includes registrar search and purchase for exactly this: the domain becomes a line item in your offering, and the ownership records are clean from day one.
 
 ## Access: authorization, not credentials
 
@@ -69,6 +69,6 @@ The same discipline, run forward, fits in five lines:
 
 A general walkthrough of the connection sequence itself is at [how to set up a custom domain](https://customdomain.ai/guides/how-to-set-up-a-custom-domain).
 
-## About CustomDomain
+## About CustomDomain™
 
-This guide is maintained by [CustomDomain](https://customdomain.ai), a managed platform that lets your clients connect their own domains: automatic DNS configuration, value-checked verification, and TLS issuance and renewal across 63 providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual, fully white label for [agencies and resellers](https://customdomain.ai/for/agencies-white-label). Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).
+This guide is maintained by [CustomDomain™](https://customdomain.ai), a managed platform that lets your clients connect their own domains: automatic DNS configuration, value-checked verification, and TLS issuance and renewal across 63 providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual, fully white label for [agencies and resellers](https://customdomain.ai/for/agencies-white-label). Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).

@@ -91,7 +91,7 @@ The response tells you what happens next:
 pending -> propagating -> live
 ```
 
-with `failed` as the terminal case when records never appear: 24 hours on an automatic rail, 72 hours on the manual path, and an `error_code` of `propagation_timeout` or `setup_incomplete` saying which. A `failed` connection clears itself if the records later show up.
+with `failed` as the error case when records a rail wrote never resolve within 24 hours (`error_code: propagation_timeout`). A manual connection never fails on its own: after 72 hours in `pending` it carries `error_code: setup_incomplete` as a diagnosis and keeps being re-checked. A `failed` connection clears itself if the records later show up.
 
 Poll the connection, or better, register a webhook and let the transitions come to you. Verification always precedes go-live: the edge does not serve a hostname whose connection has not reached `live`, and reaching `live` requires every declared record to resolve to its exact expected value, not merely to resolve.
 
@@ -116,6 +116,6 @@ For your own team's access to the console, authorization is by member role on a 
 
 Most agencies end up with both: the widget for client self-serve, the API for migrations, automation, and the fleet console. And if your operations run partly through AI agents, the same flows are exposed through a hosted [MCP server](https://customdomain.ai/mcp-server), where no tool takes DNS records as input, so records are always computed server-side.
 
-## About CustomDomain
+## About CustomDomain™
 
-This guide is maintained by [CustomDomain](https://customdomain.ai), a managed domain-connection platform built for [agencies and white label platforms](https://customdomain.ai/for/agencies-white-label): connection methods covering 63 DNS and registrar providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual, value-checked verification, and TLS issuance and renewal at a managed edge with tenant and application scoped isolation. Start free at [app.customdomain.ai/signup](https://app.customdomain.ai/signup), or read the [docs](https://docs.customdomain.ai/docs).
+This guide is maintained by [CustomDomain™](https://customdomain.ai), a managed domain-connection platform built for [agencies and white label platforms](https://customdomain.ai/for/agencies-white-label): connection methods covering 63 DNS and registrar providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual, value-checked verification, and TLS issuance and renewal at a managed edge with tenant and application scoped isolation. Start free at [app.customdomain.ai/signup](https://app.customdomain.ai/signup), or read the [docs](https://docs.customdomain.ai/docs).

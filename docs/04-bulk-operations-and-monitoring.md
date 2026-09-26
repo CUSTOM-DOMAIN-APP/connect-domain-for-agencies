@@ -39,7 +39,7 @@ Detection, record writing (via each client's authorization or token), verificati
 pending -> propagating -> live
 ```
 
-with `failed` as the terminal case: an automatic rail whose records never appeared within 24 hours, or a manual connection whose records never appeared within 72. A failed connection carries `error_code` of `propagation_timeout` or `setup_incomplete`, and both clear automatically if the records later show up.
+with `failed` as the error case: an automatic rail whose records never resolved within 24 hours fails with `error_code: propagation_timeout`. A manual connection whose records have not appeared after 72 hours does not fail; it stays `pending` with `error_code: setup_incomplete` and keeps being re-checked. Both clear automatically when the records show up.
 
 Three rules make bulk work sane:
 
@@ -98,7 +98,7 @@ Certificate renewal is where fleet management quietly fails, because it is invis
 
 1. **Lifetimes are short and shrinking.** Public TLS certificates already have brief lifetimes, and the CA/Browser Forum has adopted a schedule stepping maximum validity down to 47 days by 2029. Any process with a human in the renewal loop is already broken at fleet scale; the industry is making it more broken every year.
 2. **Renewal must not depend on re-touching client DNS.** A renewal design that needs a new record in the client's zone every cycle multiplies your drift surface by every renewal of every domain. With the edge terminating TLS, issuance happens after DNS points at the edge and renewals happen at the edge, without touching the client's DNS again.
-3. **Failure must fail closed.** If issuance or renewal fails, the correct behavior is to keep retrying and never serve a broken certificate, not to serve traffic with a warning. Verify your provider's failure mode before you need it. In CustomDomain the edge asks the control plane whether a host is authorized to be served, and that answer is driven by connection status, so a host that is not `live` is not served. The control plane also sits outside the request path, so client traffic never waits on an API call, and quota and billing checks live on the write path only rather than on the serving path.
+3. **Failure must fail closed.** If issuance or renewal fails, the correct behavior is to keep retrying and never serve a broken certificate, not to serve traffic with a warning. Verify your provider's failure mode before you need it. In CustomDomain™ the edge asks the control plane whether a host is authorized to be served, and that answer is driven by connection status, so a host that is not `live` is not served. The control plane also sits outside the request path, so client traffic never waits on an API call, and quota and billing checks live on the write path only rather than on the serving path.
 
 One honest limit on the monitoring side, since this section is about knowing before the client does: what runs is DNS record drift detection, comparing live public DNS against the baseline a connection stores. Nothing probes the client's origin for reachability, status code, or latency. It is not uptime monitoring, and if you are selling uptime as part of the engagement you still need a separate tool for it.
 
@@ -107,7 +107,8 @@ One honest limit on the monitoring side, since this section is about knowing bef
 | Signal | Meaning | Action |
 |---|---|---|
 | Connection not `live` after a day | Onboarding stalled | Nudge the client to authorize; check the guided-manual records reached them |
-| Connection `failed` | Records never appeared within the window | Read `error_code`: `propagation_timeout` means written but never resolved, `setup_incomplete` means never added |
+| Connection `failed` | Records a rail wrote never resolved within 24 hours | Read `error_code`: `propagation_timeout` means written but never resolved |
+| Connection `pending` with `setup_incomplete` | Manual records not added after 72 hours | Resend the exact records to the client; the connection keeps checking |
 | `domain.record_missing` | DNS drift, or the registration lapsed | Runbook above; call the client if the domain itself expired |
 | `connection.records_outdated` | Applied records predate a change in the edge target | Re-run setup from the link in the envelope, in batches |
 | `connection.reapply.failed` | A managed re-apply failed, possibly a revoked grant | Ask the client to re-consent before it breaks |
@@ -116,6 +117,6 @@ One honest limit on the monitoring side, since this section is about knowing bef
 
 One console view of every client's domains, statuses, and certificates, with drift checked regularly, is the difference between operating a fleet and merely owning one. That console, the widget your clients see ([doc 02](02-white-label-domain-connection.md)), and the API above are the same system wearing three interfaces.
 
-## About CustomDomain
+## About CustomDomain™
 
-This guide is maintained by [CustomDomain](https://customdomain.ai), a managed domain-connection platform for [agencies and white label platforms](https://customdomain.ai/for/agencies-white-label): connection methods covering 63 providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual with automatic verification, value-checked DNS verification, TLS issued and renewed at a managed edge that serves only authorized hosts, hourly DNS drift checks with webhooks, and a [REST API](https://customdomain.ai/custom-domain-api) with a served OpenAPI spec. Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs). Start free at [app.customdomain.ai/signup](https://app.customdomain.ai/signup).
+This guide is maintained by [CustomDomain™](https://customdomain.ai), a managed domain-connection platform for [agencies and white label platforms](https://customdomain.ai/for/agencies-white-label): connection methods covering 63 providers, 25 of them fully auto-configured (one-click provider authorization or a scoped API token) and 38 guided manual with automatic verification, value-checked DNS verification, TLS issued and renewed at a managed edge that serves only authorized hosts, hourly DNS drift checks with webhooks, and a [REST API](https://customdomain.ai/custom-domain-api) with a served OpenAPI spec. Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs). Start free at [app.customdomain.ai/signup](https://app.customdomain.ai/signup).

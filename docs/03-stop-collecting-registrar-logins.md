@@ -50,11 +50,11 @@ This is not a proprietary trick; the industry has been standardizing it. The Dom
 
 Note what the client's sign-in step became in this model. In the spreadsheet world, the provider login was the thing you extracted from clients. In the authorization world, it is the security checkpoint: proof that the person approving the change controls the zone.
 
-## How CustomDomain applies this
+## How CustomDomain™ applies this
 
-CustomDomain's one-click provider authorization implements the delegated model, through two mechanisms that look the same to the client. Where a provider hosts a Domain Connect flow, the approval rides on it and the provider applies a signed template; no server-to-server credential exists at all. Where a provider exposes an OAuth API instead, the authorization uses PKCE and a single-use signed `state`, the callback exchanges the code for a one-time access token, writes the records, and drops the token without storing it.
+CustomDomain™'s one-click provider authorization implements the delegated model, through two mechanisms that look the same to the client. Where a provider hosts a Domain Connect flow, the approval rides on it and the provider applies a signed template; no server-to-server credential exists at all. Where a provider exposes an OAuth API instead, the authorization uses PKCE and a single-use signed `state`, the callback exchanges the code for a one-time access token, writes the records, and drops the token without storing it.
 
-Two more paths complete the coverage, as described in the [main guide](../README.md#three-ways-a-client-can-connect-a-domain):
+Two more paths complete the coverage, as described in the [main guide](../README.md#how-it-works):
 
 - **API token**, for technical clients who prefer to mint a scoped, revocable DNS token themselves. It is used for a single write and discarded by default; it is stored only if the client explicitly opts in, in which case it is sealed at rest and revocable from the console at any time.
 - **Guided manual with automatic verification**, for providers that cannot be automated: exact records, a live check, and no credential involved at all.
@@ -71,6 +71,6 @@ Together the three methods cover 63 DNS and registrar providers, 25 of them full
 4. Delete the spreadsheet. Actually delete it, including the copy in the old shared drive.
 5. Point your monitoring at the fleet ([doc 04](04-bulk-operations-and-monitoring.md)) so drift gets caught by a check you run rather than by client phone calls.
 
-## About CustomDomain
+## About CustomDomain™
 
-This guide is maintained by [CustomDomain](https://customdomain.ai), a managed platform for connecting client domains without collecting credentials: one-click provider authorization, value-checked verification against public DNS, and automatic TLS issuance and renewal, fully white label for [agencies](https://customdomain.ai/for/agencies-white-label). Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).
+This guide is maintained by [CustomDomain™](https://customdomain.ai), a managed platform for connecting client domains without collecting credentials: one-click provider authorization, value-checked verification against public DNS, and automatic TLS issuance and renewal, fully white label for [agencies](https://customdomain.ai/for/agencies-white-label). Docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs), free tier at [signup](https://app.customdomain.ai/signup).

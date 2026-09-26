@@ -1,11 +1,13 @@
-# Custom Domain for Agencies
+# CustomDomain™ for Agencies
 
-White-label custom domains for agencies — connect client domains to the platforms you build on
+White-label custom domains for agencies: connect client domains to the platforms you build on.
 
-**Status:** Maintained guide · every number re-verified against the live API on 2026-09-04 · public
+**Status:** Maintained guide · live API numbers re-verified on 2026-09-26 · public
 
 [![docs](https://img.shields.io/badge/docs-docs.customdomain.ai-1c1917?style=flat)](https://docs.customdomain.ai/docs)
 [![license](https://img.shields.io/badge/license-MIT-1c1917?style=flat)](./LICENSE)
+
+[Website](https://customdomain.ai) · [Docs](https://docs.customdomain.ai/docs) · [Console](https://app.customdomain.ai) · [For agencies](https://customdomain.ai/for/agencies-white-label) · [API reference](https://docs.customdomain.ai/docs/api-reference)
 
 |  |  |
 |---|---|
@@ -13,12 +15,12 @@ White-label custom domains for agencies — connect client domains to the platfo
 | **Who it's for** | Agencies, resellers and white-label platforms running sites for many clients |
 | **Live at** | [customdomain.ai/for/agencies-white-label](https://customdomain.ai/for/agencies-white-label) · docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs) |
 | **Stack** | Markdown guide · REST API, OpenAPI 3.1 · embeddable widget (`customdomain-js`) |
-| **Status** | Maintained · 63 providers and 5 plans re-counted from the live API 2026-09-04 |
+| **Status** | Maintained · 63 providers and 5 plans re-counted from the live API 2026-09-26 |
 
 Managing forty client sites means managing forty domains that live wherever the client happened to buy them.
 This repository is the operational playbook for that: how a domain actually goes live, the three ways a client
 can authorize the change without handing you a registrar password, and how to keep a fleet healthy for years
-after launch day. Maintained by [Custom Domain](https://customdomain.ai); the guidance stands whether or not you
+after launch day. Maintained by [CustomDomain™](https://customdomain.ai); the guidance stands whether or not you
 use the product.
 
 ## The problem, from the agency side
@@ -78,7 +80,7 @@ caches expire. The apex is the part that surprises people. A bare domain cannot 
 flattening, ALIAS, ANAME) or A records you accept responsibility for updating.
 
 The copy-paste step can be removed three ways. The split below is the live census at `GET
-https://api.customdomain.ai/v1/providers/census`, counted 2026-09-04.
+https://api.customdomain.ai/v1/providers/census`, counted 2026-09-26.
 
 | Rail | Providers (of 63) | Client effort | Credentials you handle | Time to live |
 |---|---|---|---|---|
@@ -115,13 +117,13 @@ reference](https://docs.customdomain.ai/docs/api-reference).
 └── LICENSE    # MIT
 ```
 
-Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai` (OpenAPI 3.1: 67
-paths, 79 operations, counted 2026-09-04), the widget published as `customdomain-js` on npm, and a hosted MCP
+Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai` (OpenAPI 3.1: 68
+paths, 80 operations, counted 2026-09-26), the widget published as `customdomain-js` on npm, and a hosted MCP
 server at `mcp.customdomain.ai/mcp` (registry id `ai.customdomain/mcp`) for agent-driven operations.
 
 ## Pricing, and where this loses
 
-Read from `GET https://api.customdomain.ai/v1/plans` on 2026-09-04.
+Read from `GET https://api.customdomain.ai/v1/plans` on 2026-09-26.
 
 | Plan | Price | Connections included | Notes |
 |---|---|---|---|
@@ -133,9 +135,9 @@ Read from `GET https://api.customdomain.ai/v1/plans` on 2026-09-04.
 Read the monthly number, not the annual one: a tier is sold per year and metered per UTC calendar month at
 `ceil(domains_per_year / 12)`, so the question is how many *new* connections you create in a busy month. Keeping
 an existing one costs nothing. Entri is the vendor you are most likely comparing against; read 2026-08-19, its
-entry tier is $249/mo for the same 600 a year with no free tier. Where Entri is ahead: across 696 provider
-domains in [Domain-Connect/Templates](https://github.com/Domain-Connect/Templates), goentri.com ships 77
-one-click templates and customdomain.ai ships 18. That gap is real and it is theirs.
+entry tier is $249/mo for the same 600 a year with no free tier. Where Entri is ahead: in
+[Domain-Connect/Templates](https://github.com/Domain-Connect/Templates), goentri.com ships 77 one-click templates
+and customdomain.ai ships 18 (counted 2026-09-26). That gap is real and it is theirs.
 
 ## Limits and known gaps
 
@@ -149,14 +151,29 @@ one-click templates and customdomain.ai ships 18. That gap is real and it is the
 Every number here traces to a live endpoint or a public repository, named at the point of use. If one does not,
 that is a bug: open an issue with the file and line.
 
-Sibling guides: [for AI agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents) · [for
-website builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders) · [for email
-platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms) ·
-[awesome-custom-domains](https://github.com/CUSTOM-DOMAIN-APP/awesome-custom-domains), which lists the
-alternatives to this one. Problem framing draws on the [Domain Connect knowledge
-base](https://github.com/Domain-Connect/knowledge-base) (CC0 1.0), an open standard maintained by a community
-across multiple companies and referenced here as prior art.
+Problem framing draws on the [Domain Connect knowledge base](https://github.com/Domain-Connect/knowledge-base)
+(CC0 1.0), an open standard maintained by a community across multiple companies and referenced here as prior
+art.
+
+## Related
+
+- [connect-domain-for-ai-agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents): CustomDomain™ for AI Agents
+- [connect-domain-for-email-platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms): CustomDomain™ for Email Platforms
+- [connect-domain-for-website-builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders): CustomDomain™ for Website Builders
+- [customdomain-sdk](https://github.com/CUSTOM-DOMAIN-APP/customdomain-sdk): the browser SDK `customdomain-js` and the React wrapper `@customdomain/react`
+- [customdomain-mcp](https://github.com/CUSTOM-DOMAIN-APP/customdomain-mcp): the hosted MCP server for agent-driven operations
+- [docs](https://github.com/CUSTOM-DOMAIN-APP/docs): the CustomDomain™ documentation source, rendered at [docs.customdomain.ai](https://docs.customdomain.ai/docs)
+- [awesome-custom-domains](https://github.com/CUSTOM-DOMAIN-APP/awesome-custom-domains): the curated list of the category, including the alternatives to this product
+
+## Support
+
+- **Docs:** [docs.customdomain.ai](https://docs.customdomain.ai/docs)
+- **Questions and ideas:** [GitHub Discussions](https://github.com/CUSTOM-DOMAIN-APP/docs/discussions)
+- **Bugs and corrections:** [open an issue](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-agencies/issues) on this repository
+- **Service status:** [status.customdomain.ai](https://status.customdomain.ai)
+- **Account and billing:** connect@customdomain.ai
+- **Security:** report privately to security@customdomain.ai, never in a public issue. Policy: [app.customdomain.ai/security](https://app.customdomain.ai/security)
 
 ## License
 
-[MIT](./LICENSE) © CustomDomain.ai, a product of EverJust Company.
+[MIT](./LICENSE). CustomDomain™ is a product of EverJust Company.
