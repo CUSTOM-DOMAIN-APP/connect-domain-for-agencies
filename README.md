@@ -1,8 +1,9 @@
-# CustomDomain™ for Agencies
+# Custom domains for agencies: the CustomDomain™ field guide
 
-White-label custom domains for agencies: connect client domains to the platforms you build on.
+Custom domains for agencies: connect client domains to the sites you host, under your brand, without
+collecting registrar logins.
 
-**Status:** Maintained guide · live API numbers re-verified on 2026-09-26 · public
+**Status:** Maintained guide · live API numbers re-verified on 2026-10-20 · public
 
 [![docs](https://img.shields.io/badge/docs-docs.customdomain.ai-1c1917?style=flat)](https://docs.customdomain.ai/docs)
 [![license](https://img.shields.io/badge/license-MIT-1c1917?style=flat)](./LICENSE)
@@ -15,7 +16,7 @@ White-label custom domains for agencies: connect client domains to the platforms
 | **Who it's for** | Agencies, resellers and white-label platforms running sites for many clients |
 | **Live at** | [customdomain.ai/for/agencies-white-label](https://customdomain.ai/for/agencies-white-label) · docs at [docs.customdomain.ai](https://docs.customdomain.ai/docs) |
 | **Stack** | Markdown guide · REST API, OpenAPI 3.1 · embeddable widget (`customdomain-js`) |
-| **Status** | Maintained · 63 providers and 5 plans re-counted from the live API 2026-09-26 |
+| **Status** | Maintained · 178 providers and 5 plans re-counted from the live API 2026-10-20 |
 
 Managing forty client sites means managing forty domains that live wherever the client happened to buy them.
 This repository is the operational playbook for that: how a domain actually goes live, the three ways a client
@@ -60,8 +61,39 @@ curl -X POST https://api.customdomain.ai/v1/connections \
 
 The response carries the connection plus its authoritative desired record set, and status walks `pending` to
 `propagating` to `live`. Create is idempotent per application plus domain, so a re-run mid-migration replays the
-existing connection with a `200` instead of duplicating it. Unknown fields are a `400`. Free-tier keys:
-[app.customdomain.ai/signup](https://app.customdomain.ai/signup).
+existing connection with a `200` instead of duplicating it. Unknown fields are a `400`. Sign up at
+[app.customdomain.ai/signup](https://app.customdomain.ai/signup); every workspace has a default API key on its
+**API & SDK** page.
+
+## Client domain workflows without registrar logins
+
+The questions agencies actually search for are concrete: connect a client's GoDaddy domain without their
+password, get DNS access at Cloudflare without the whole account, hand the DNS step to the client's IT person.
+Four workflows cover them, and none of them puts a registrar login in your hands.
+
+1. **The client approves at their own provider.** For the 7 providers with a one-click rail (Cloudflare,
+   DigitalOcean, DNSimple, Netlify, Vercel and WordPress.com by OAuth, NameSilo by Domain Connect), the client
+   signs in at the provider and approves one scoped change. You never see a credential.
+2. **The client creates a scoped token.** For the 55 providers on the API-token rail (GoDaddy, Amazon Route 53,
+   IONOS, Porkbun and Hetzner among them), the client creates a token limited to DNS and pastes it into the
+   widget, which uses it once and discards it by default. At GoDaddy that is a Personal Access Token with only
+   `domains.domain:read` and `domains.dns:update`; Route 53 can instead grant an access role to CustomDomain™'s
+   AWS account.
+3. **Someone else finishes it.** Start the connection in the widget, then use **Share** to send a link (it
+   expires after 30 days) to whoever controls the client's DNS. They complete the step in the same flow, and
+   you get `connection.live` when the domain is serving.
+4. **No one can automate this provider.** For the other 116 providers in the census, the widget names the
+   provider, shows the exact records in that provider's own terms, and verifies them in public DNS as they
+   appear. The client or their IT adds them; you watch the status.
+
+Tag every connection with your own client id (`end_user_ref`) and every migration with a `batch_id`, as in the
+Quickstart: every connection `GET /v1/connections` returns carries both, and the console shows which client
+connected each domain.
+
+If you would rather stay inside the registrars' own tools, two of them have a real answer: GoDaddy's
+**Delegate Access** invites you into the client's account without their password, and Cloudflare account
+members can hold roles scoped to one domain. Both work. Both still leave you editing records by hand for every
+client, and GoDaddy's access levels reach well beyond DNS.
 
 ## What it does
 
@@ -80,13 +112,13 @@ caches expire. The apex is the part that surprises people. A bare domain cannot 
 flattening, ALIAS, ANAME) or A records you accept responsibility for updating.
 
 The copy-paste step can be removed three ways. The split below is the live census at `GET
-https://api.customdomain.ai/v1/providers/census`, counted 2026-09-26.
+https://api.customdomain.ai/v1/providers/census`, counted 2026-10-20.
 
-| Rail | Providers (of 63) | Client effort | Credentials you handle | Time to live |
+| Rail | Providers (of 178) | Client effort | Credentials you handle | Time to live |
 |---|---|---|---|---|
-| One-click provider authorization | 8 (6 provider OAuth, 2 provider-hosted Domain Connect) | Approve inside their own provider session | None | About 30 seconds |
-| Scoped API token | 17 | Supply one DNS-scoped token, used once by default | None | Minutes |
-| Guided manual with automatic verification | 38 | Paste the exact records for their detected provider | None | Verified automatically |
+| One-click provider authorization | 7 (6 provider OAuth, 1 provider-hosted Domain Connect) | Approve inside their own provider session | None | About 30 seconds |
+| Scoped API token | 55 | Supply one DNS-scoped token, used once by default | None | Minutes |
+| Guided manual with automatic verification | 116 | Paste the exact records for their detected provider | None | Verified automatically |
 
 Control is proven by whichever rail wrote the records; on the manual path, proof is the records resolving to the
 exact expected values, never "the name resolves to something". There is no TXT ownership token. The product docs
@@ -117,22 +149,23 @@ reference](https://docs.customdomain.ai/docs/api-reference).
 └── LICENSE    # MIT
 ```
 
-Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai` (OpenAPI 3.1: 68
-paths, 80 operations, counted 2026-09-26), the widget published as `customdomain-js` on npm, and a hosted MCP
+Markdown only, no build step. Surfaces referenced from here: REST at `api.customdomain.ai` (OpenAPI 3.1: 129
+paths, 152 operations, counted 2026-10-20), the widget published as `customdomain-js` on npm, and a hosted MCP
 server at `mcp.customdomain.ai/mcp` (registry id `ai.customdomain/mcp`) for agent-driven operations.
 
 ## Pricing, and where this loses
 
-Read from `GET https://api.customdomain.ai/v1/plans` on 2026-09-26.
+Read from `GET https://api.customdomain.ai/v1/plans` on 2026-10-20.
 
 | Plan | Price | Connections included | Notes |
 |---|---|---|---|
-| Free | $0 | 10/yr, 1/month | The only tier refused at its quota |
+| Starter | $10/mo | 10/yr, 1/month | The only tier refused at its quota |
 | Startup | $149/mo | 600/yr, 50/month | Self-serve |
 | Growth | $649/mo | 600/yr, 50/month | Adds the reverse-proxy and certificate APIs |
 | Premium / Enterprise | Contact sales | 12,000/yr | Adds monitoring preview, then the white-label entitlement |
 
-Read the monthly number, not the annual one: a tier is sold per year and metered per UTC calendar month at
+The self-serve plans start with a 14 day free trial, and a new workspace connects its first ten domains without
+a card. Read the monthly number, not the annual one: a tier is sold per year and metered per UTC calendar month at
 `ceil(domains_per_year / 12)`, so the question is how many *new* connections you create in a busy month. Keeping
 an existing one costs nothing. Entri is the vendor you are most likely comparing against; read 2026-08-19, its
 entry tier is $249/mo for the same 600 a year with no free tier. Where Entri is ahead: in
@@ -141,7 +174,7 @@ and customdomain.ai ships 18 (counted 2026-09-26). That gap is real and it is th
 
 ## Limits and known gaps
 
-- **Nobody has broad one-click coverage, including us.** 38 of the 63 catalogued providers have no automated write rail at all, for any vendor. The useful evaluation question is how good the manual path is, not how many providers a brochure claims.
+- **Nobody has broad one-click coverage, including us.** 116 of the 178 catalogued providers have no automated write rail at all, for any vendor. The useful evaluation question is how good the manual path is, not how many providers a brochure claims.
 - **Drift webhooks are off by default.** The hourly sweep runs, but `domain.record_missing` and `domain.record_restored` are gated behind a deployment flag the hosted service leaves off. Build alerting on `POST /v1/monitor:check` until that changes.
 - **A stale CAA record blocks issuance silently.** RFC 8659 CAA is honoured by every public CA, so `CAA 0 issue "digicert.com"` from a 2019 vendor relationship fails certificate issuance while every DNS record you added is correct. Run `dig +short CAA northwind.com` before you promise a launch time.
 - **SSO and SCIM are not built.** No tier grants them.
@@ -157,9 +190,9 @@ art.
 
 ## Related
 
-- [connect-domain-for-ai-agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents): CustomDomain™ for AI Agents
-- [connect-domain-for-email-platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms): CustomDomain™ for Email Platforms
-- [connect-domain-for-website-builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders): CustomDomain™ for Website Builders
+- [connect-domain-for-ai-agents](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-ai-agents): custom domains for AI agents, the field guide
+- [connect-domain-for-email-platforms](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-email-platforms): custom sending domains for email platforms, the field guide
+- [connect-domain-for-website-builders](https://github.com/CUSTOM-DOMAIN-APP/connect-domain-for-website-builders): custom domains for website builders, the field guide
 - [customdomain-sdk](https://github.com/CUSTOM-DOMAIN-APP/customdomain-sdk): the browser SDK `customdomain-js` and the React wrapper `@customdomain/react`
 - [customdomain-mcp](https://github.com/CUSTOM-DOMAIN-APP/customdomain-mcp): the hosted MCP server for agent-driven operations
 - [docs](https://github.com/CUSTOM-DOMAIN-APP/docs): the CustomDomain™ documentation source, rendered at [docs.customdomain.ai](https://docs.customdomain.ai/docs)
