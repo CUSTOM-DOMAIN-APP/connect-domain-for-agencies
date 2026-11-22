@@ -1,8 +1,10 @@
-# Custom domains for agencies
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/media/customdomain-mark-dark.png"><img src=".github/media/customdomain-mark.png" alt="CustomDomain" width="56"></picture></p>
+<h1 align="center">Custom domains for agencies</h1>
+<p align="center"><b>How to connect client domains to the sites you host, without collecting registrar logins.</b></p>
+<p align="center"><a href="https://docs.customdomain.ai/docs/getting-started/quickstart"><img src="https://img.shields.io/badge/docs-quickstart-1c1917?style=flat" alt="docs"></a> <a href="https://customdomain.ai"><img src="https://img.shields.io/badge/website-customdomain.ai-1c1917?style=flat" alt="website"></a> <a href="https://www.producthunt.com/products/custom-domain"><img src="https://img.shields.io/badge/Product%20Hunt-CustomDomain-1c1917?style=flat&logo=producthunt&logoColor=white" alt="Product Hunt"></a></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/media/widget-flow-dark.png"><img src=".github/media/widget-flow-light.png" alt="The CustomDomain widget: your user types their domain, signs in at their provider, and it goes live" width="860"></picture></p>
 
-Connect client domains to the sites you host, under your brand, without collecting registrar logins.
-
-[Custom domains for agencies on customdomain.ai](https://customdomain.ai/gh/agencies) · [Agencies in the docs](https://docs.customdomain.ai/docs/use-cases/agencies) · [Start free: first ten domains, no card](https://app.customdomain.ai/signup)
+CustomDomain is now built for software products that let their users connect a domain. Start here: [Quickstart](https://docs.customdomain.ai/docs/getting-started/quickstart).
 
 Managing forty client sites means managing forty domains that live wherever the client happened to buy them.
 This repository is the operational playbook for that: how a domain actually goes live, the three ways a client
